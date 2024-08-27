@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrix Digital Rain with Instagram Info</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+        }
+        canvas {
+            display: block;
+        }
+        #info-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #0F0;
+            text-align: center;
+            font-size: 24px;
+            text-shadow: 0 0 5px #0F0;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <div id="info-overlay"></div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const infoOverlay = document.getElementById('info-overlay');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const katakana = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+        const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const nums = '0123456789';
+
+        const alphabet = katakana + latin + nums;
+
+        const fontSize = 16;
+        const columns = canvas.width / fontSize;
+
+        const rainDrops = [];
+
+        for (let x = 0; x < columns; x++) {
+            rainDrops[x] = 1;
+        }
+
+        function draw() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#0F0';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < rainDrops.length; i++) {
+                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+
+                if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    rainDrops[i] = 0;
+                }
+                rainDrops[i]++;
+            }
+        }
+
+        function displayInstagramInfo() {
+            const urlParams = new URLSearchParams(window.location.search);
+            let infoHTML = '<h2>Instagram Info:</h2>';
+
+            if (urlParams.has('username')) {
+                infoHTML += `<p>Username: ${urlParams.get('username')}</p>`;
+            }
+
+            if (urlParams.has('id')) {
+                infoHTML += `<p>User ID: ${urlParams.get('id')}</p>`;
+            }
+
+            if (urlParams.has('full_name')) {
+                infoHTML += `<p>Full Name: ${urlParams.get('full_name')}</p>`;
+            }
+
+            if (urlParams.has('bio')) {
+                infoHTML += `<p>Bio: ${urlParams.get('bio')}</p>`;
+            }
+
+            if (infoHTML === '<h2>Instagram Info:</h2>') {
+                infoHTML += '<p>No Instagram data found.</p>';
+                infoHTML += '<p>Add parameters to URL:</p>';
+                infoHTML += '<p>?username=example&id=123456&full_name=John%20Doe&bio=Web%20Developer</p>';
+            }
+
+            infoOverlay.innerHTML = infoHTML;
+        }
+
+        setInterval(draw, 30);
+        displayInstagramInfo();
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+</body>
+</html>
